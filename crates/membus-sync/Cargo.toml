@@ -1,0 +1,13 @@
+[package]
+    edition.workspace = true
+    name = "membus-sync"
+    readme = "README.md"
+    version.workspace = true
+
+[dependencies]
+    bytemuck.workspace = true
+    itertools.workspace = true
+    nix.workspace = true
+    socket2.workspace = true
+    strum.workspace = true
+    thiserror.workspace = true

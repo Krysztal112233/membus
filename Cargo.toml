@@ -1,0 +1,20 @@
+[workspace]
+    members = ["crates/membus-pull", "crates/membus-push", "crates/membus-sync"]
+    resolver = "2"
+
+[workspace.package]
+    edition = "2021"
+    version = "0.1.0"
+
+[workspace.dependencies]
+    bytemuck = { version = "1.19", features = ["extern_crate_std"] }
+    itertools = "0.13"
+    memfd = "0.6"
+    nix = "0.29"
+    socket2 = "0.5"
+    strum = { version = "0", features = ["derive"] }
+    thiserror = "1.0"
+
+    membus-pull = { package = "membus-pull", path = "crates/membus-pull" }
+    membus-push = { package = "membus-push", path = "crates/membus-push" }
+    membus-sync = { package = "membus-sync", path = "crates/membus-sync" }

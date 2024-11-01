@@ -1,0 +1,9 @@
+[package]
+    edition.workspace = true
+    name = "membus-push"
+    version.workspace = true
+
+[dependencies]
+
+
+    membus-sync.workspace = true
