@@ -7,7 +7,7 @@
     version = "0.1.0"
 
 [workspace.dependencies]
-    bytemuck = { version = "1.19", features = ["extern_crate_std"] }
+    bytemuck = { version = "1.19", features = ["extern_crate_std", "derive"] }
     itertools = "0.13"
     memfd = "0.6"
     nix = "0.29"

@@ -1,7 +1,7 @@
-use strum::EnumIter;
+use strum::{EnumIter, FromRepr};
 
 #[repr(u8)]
-#[derive(Debug, Default, EnumIter)]
+#[derive(Debug, Default, Clone, EnumIter, FromRepr, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SyncSignal {
     /// Sending data package
     #[default]

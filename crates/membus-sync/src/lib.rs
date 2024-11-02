@@ -1,6 +1,5 @@
 use std::io::{self, BufWriter, Cursor, IntoInnerError};
 
-use packet::PacketBufWriter;
 use thiserror::Error;
 
 #[derive(Debug, Error)]

@@ -1,18 +1,19 @@
-use crate::{signal::SyncSignal, Error};
+use crate::{packet::PacketBufReader, signal::SyncSignal, Error};
 
-use super::{PacketBuf, PacketBufCodec};
+use super::{PacketBuf, PacketBufCodec, PacketBufWriter};
 
 #[doc = include_str!("signal.md")]
-#[derive(Debug, Default)]
-pub struct SignalPacket {
+#[derive(Debug, Default, Clone)]
+pub struct SyncSignalPacket {
     /// Signal type
     pub signal: SyncSignal,
 
     /// Payload of this packet
-    pub payload: PacketBuf,
+    pub payload: Vec<u8>,
 }
 
-impl SignalPacket {
+#[allow(unused)]
+impl SyncSignalPacket {
     /// Constructing  [`SignalPacket`] with empty [`SignalPacket::payload`]
     pub fn new(signal: SyncSignal) -> Self {
         Self {
@@ -22,23 +23,36 @@ impl SignalPacket {
     }
 }
 
-impl PacketBufCodec for SignalPacket {
+impl PacketBufCodec for SyncSignalPacket {
     fn encode(self) -> Result<PacketBuf, Error> {
-        let mut buffer = PacketBuf::with_capacity(self.payload.len() + 1);
+        let mut buffer: PacketBufWriter = PacketBuf::with_capacity(self.payload.len() + 1).into();
 
-        buffer.push(self.signal as u8);
+        buffer.write(self.signal as u8)?;
+        buffer.write_slice(&self.payload)?;
 
-        #[cfg(target_endian = "little")]
-        buffer.extend_from_slice(&self.payload.len().to_le_bytes());
-        #[cfg(target_endian = "big")]
-        buffer.extend_from_slice(&self.payload.len().to_be_bytes());
-
-        buffer.extend_from_slice(&self.payload);
-
-        Ok(buffer)
+        Ok(buffer.into_inner())
     }
 
-    fn decode(buf: &[u8]) -> Result<SignalPacket, Error> {
-        todo!()
+    fn decode(buf: PacketBuf) -> Result<SyncSignalPacket, Error> {
+        let mut buf: PacketBufReader = buf.into();
+
+        let signal = SyncSignal::from_repr(buf.read::<u8>()?).unwrap_or_default();
+        let payload = buf.read_sized::<u8>()?;
+
+        Ok(Self { signal, payload })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_codec() {
+        let packet = SyncSignalPacket::default();
+
+        let packet = packet.encode().expect("SyncSignalPacket::encode");
+
+        SyncSignalPacket::decode(packet).expect("SyncSignalPacket::decode");
     }
 }
